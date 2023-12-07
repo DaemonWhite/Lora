@@ -24,8 +24,6 @@ async function loadCommands(client) {
 
     });
 
-    //console.log(client)
-
     const rest = new REST().setToken(process.env.DISCORD_TOKEN);
 
     (async () => {
@@ -36,7 +34,7 @@ async function loadCommands(client) {
                 Routes.applicationCommands(process.env.APP_ID),
                 { body: listCommands },
             );
-    
+            console.log(`${data}`)
             console.log(`Successfully reloaded ${data.length} application (/) commands.`);
         } catch (error) {
             // And of course, make sure you catch and log any errors!
