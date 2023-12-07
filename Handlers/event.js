@@ -21,6 +21,7 @@ async function loadEvents(client) {
             events.push({Event: file.split("/").pop().slice(0, -3), Status: `Error ${error}`});
         }
     }
+    
     console.table(events, ["Event", "Status"]);
     console.info("\n\x1b[36m%s\x1b[0m", "Loaded Events");
     console.timeEnd("Event loaded");

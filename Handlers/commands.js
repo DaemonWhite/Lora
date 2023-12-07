@@ -1,21 +1,49 @@
 const { loadFiles } = require("../utils/fileLoader");
+const { REST, Routes } = require('discord.js');
 
 async function loadCommands(client) {
     const ascii = require("ascii-table");
     const table = new ascii().setHeading("Commands", "Status");
 
     await client.commands.clear();
-    let commandsArray = [];
+
+    let listCommands = []
 
     const Files = await loadFiles("Commands");
 
-    Files.forEach((Files) => {
+    Files.forEach((file) => {
         const command = require(file);
-        client.commands.set(command.data.toJSON());
-        table.addRow(command.data.name, "OK");
+        
+        if ('data' in command && 'execute' in command) {
+            client.commands.set(command.data.name, command)
+            listCommands.push(command.data.toJSON())
+            table.addRow(command.data.name, "OK");
+        } else {
+            table.addRow(file, "error")
+        }
+
     });
 
-    client.application.commands.set(commandsArray);
+    //console.log(client)
+
+    const rest = new REST().setToken(process.env.DISCORD_TOKEN);
+
+    (async () => {
+        try {
+            console.log(`Started refreshing ${listCommands.length} application (/) commands.`);
+            // The put method is used to fully refresh all commands in the guild with the current set
+            const data = await rest.put(
+                Routes.applicationCommands(process.env.APP_ID),
+                { body: listCommands },
+            );
+    
+            console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+        } catch (error) {
+            // And of course, make sure you catch and log any errors!
+            console.error("oki", error);
+        }
+    })();
+
     return console.log(table.toString(), "\nCommands Loaded")
 }
 

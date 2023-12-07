@@ -2,6 +2,6 @@
 
 # Objective
 
-- [ ] Command Gestion
+- [x] Command Gestion
 - [ ] Récupération rôle
 - [ ] Evenement rôle
