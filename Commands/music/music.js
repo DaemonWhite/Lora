@@ -8,7 +8,7 @@ const audio_player = createAudioPlayer()
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("music")
+        .setName("play")
         .setDescription("Met de la sainte music")
         .addChannelOption(option => 
             option
@@ -55,8 +55,6 @@ module.exports = {
                 }
                 youtube_link = result.all[0].url;
             }
-
-            console.log(youtube_link)
 
             const stream = ytdl(youtube_link, { filter: 'audioonly' })
             // connection.subscribe(client.audio_player)
