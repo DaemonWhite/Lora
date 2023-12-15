@@ -9,23 +9,6 @@ async function loadCommands(client) {
 
     let listCommands = [];
 
-    const commands = [
-        {
-          name: 'command',
-          description: 'Commande avec option d\'émoji',
-          options: [
-            {
-              name: 'emoji',
-              description: 'Sélectionnez un émoji',
-              type: 'EMOJI',
-              required: true,
-            },
-          ],
-        },
-      ];
-
-      // listCommands.push(commands);
-
     const Files = await loadFiles("Commands");
 
     Files.forEach((file) => {
