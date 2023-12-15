@@ -7,7 +7,24 @@ async function loadCommands(client) {
 
     await client.commands.clear();
 
-    let listCommands = []
+    let listCommands = [];
+
+    const commands = [
+        {
+          name: 'command',
+          description: 'Commande avec option d\'émoji',
+          options: [
+            {
+              name: 'emoji',
+              description: 'Sélectionnez un émoji',
+              type: 'EMOJI',
+              required: true,
+            },
+          ],
+        },
+      ];
+
+      // listCommands.push(commands);
 
     const Files = await loadFiles("Commands");
 
@@ -30,6 +47,7 @@ async function loadCommands(client) {
         try {
             console.log(`Started refreshing ${listCommands.length} application (/) commands.`);
             // The put method is used to fully refresh all commands in the guild with the current set
+            console.log(listCommands)
             const data = await rest.put(
                 Routes.applicationCommands(process.env.APP_ID),
                 { body: listCommands },
@@ -38,11 +56,11 @@ async function loadCommands(client) {
             console.log(`Successfully reloaded ${data.length} application (/) commands.`);
         } catch (error) {
             // And of course, make sure you catch and log any errors!
-            console.error("oki", error);
+            console.error("Registre command Error : ", error);
         }
     })();
 
-    return console.log(table.toString(), "\nCommands Loaded")
+    return console.table(listCommands, ["name", "Status"])
 }
 
 module.exports = { loadCommands }

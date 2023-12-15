@@ -13,13 +13,17 @@ client.events = new Collection();
 client.memberGuildConfig = new Collection();
 client.messageGuildConfig = new Collection();
 
+/* description_role 
+ user_id : {
+  array : {description, role, emote}
+ }
+*/
+client.description_role = {};
+
+
+
 const { loadEvents } = require("./Handlers/event");
 
 loadEvents(client);
-
-client.on('disconnect', (event) => {
-  console.log(`Bot disconnected with code ${event.code}.`);
-  // Code pour gérer la déconnexion, par exemple, redémarrer le bot, enregistrer des données, etc.
-});
 
 client.login(process.env.DISCORD_TOKEN);
