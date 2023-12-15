@@ -23,7 +23,6 @@ module.exports = {
                 .setRequired(true)
         ),
     async execute(interaction, client) {
-        console.log(interaction)
         titre = interaction.options.getString("titre");
         channel = interaction.options.getChannel("channel");
 
@@ -34,7 +33,7 @@ module.exports = {
         });
 
         await interaction.reply('Recherche en cour')
-
+        await interaction.deferReply();
         try {
             let youtube_link = "";
             if (!channel.isVoiceBased()) {
@@ -57,7 +56,6 @@ module.exports = {
             }
 
             const stream = ytdl(youtube_link, { filter: 'audioonly' })
-            // connection.subscribe(client.audio_player)
             const resource = createAudioResource(stream, {
                 inputType: StreamType.Arbitrary,
             });
