@@ -32,8 +32,10 @@ module.exports = {
             adapterCreator: channel.guild.voiceAdapterCreator,
         });
 
-        await interaction.reply('Recherche en cour')
-        await interaction.deferReply();
+        //await interaction.deferReply();
+
+        await interaction.reply('Recherche en cour...')
+        
         try {
             let youtube_link = "";
             if (!channel.isVoiceBased()) {
@@ -65,7 +67,7 @@ module.exports = {
 
 
 
-            return await interaction.channel.send("Ok mec on à réussi à attendre cette étapes ces cool non ?")
+            return await interaction.channel.send(`Music : ${youtube_link} \n\n Bonne music`)
 
         } catch (e) {
             console.log(e)
