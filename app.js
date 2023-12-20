@@ -14,13 +14,6 @@ client.memberGuildConfig = new Collection();
 client.messageGuildConfig = new Collection();
 client.audioPlayer = createAudioPlayer()
 
-
-
-/* description_role 
- user_id : {
-  array : {description, role, emote}
- }
-*/
 client.description_role = {};
 
 

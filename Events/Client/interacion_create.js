@@ -1,5 +1,9 @@
 const { Events} = require('discord.js');
 
+const {MusicManager} = require('../../utils/music')
+
+const player = new MusicManager()
+
 module.exports = {
     name: Events.InteractionCreate,
     once: false,
@@ -12,8 +16,18 @@ module.exports = {
             return;
         }
 
+        console.log(interaction.commandName);
+
         try {
-            await command.execute(interaction);
+            if (
+                interaction.commandName == "play" || 
+                interaction.commandName == "stop" ||
+                interaction.commandName == "next" 
+            ) {
+                await command.execute(interaction, player);
+            }else {
+                await command.execute(interaction);
+            }
         } catch (error) {
             console.error(error);
             if (interaction.replied || interaction.deferred) {
