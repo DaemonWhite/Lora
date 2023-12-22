@@ -2,6 +2,9 @@ const { createAudioPlayer, joinVoiceChannel, createAudioResource, StreamType, Au
 
 const ytdl = require('ytdl-core');
 
+/** 
+* Music data
+*/
 class MusicData {
   #player = createAudioPlayer()
   #is_play = false
@@ -10,24 +13,50 @@ class MusicData {
   constructor(connection) {
     this.#connection = connection
   }
+  /**
+   * Return first music
+   * @returns fill[0]
+   */
   get_fill(){
     fill = this.#fill[0]
     return fill
   }
+  /**
+   * 
+   * @returns is_play
+   */
   get_play() {
     return this.#is_play
   }
+  /**
+   * add resource music in fill
+   * @param {AudioResource} resource 
+   */
   add_fill(resource) {
     this.#fill.push(resource);
   }
+
+  /**
+   * get length music fill
+   * @returns fill.length
+   */
   len_fill() {
     return this.#fill.length
   }
+
+  /**
+   * stop playing music
+   */
   stop() {
     this.#fill = []
 
     this.#connection.destroy()
   }
+
+  /**
+   * pass next music
+   * @returns next 
+   */
   next() {
     this.#fill.shift();
     let next = false;
@@ -37,7 +66,10 @@ class MusicData {
     }
     return next
   }
-
+/**
+ * play music and change connection
+ * @param {joinVoiceChannel} connection 
+ */
   play(connection) {
     this.#connection = connection;
     
@@ -60,11 +92,19 @@ class MusicData {
   }
 }
 
+
+/**
+ * Connect multi stream music
+ */
 class MusicManager {
   constructor() {
     this.player = new Map()
   }
-
+/**
+ * Connect base event to voice channel
+ * @param {channel} channel 
+ * @returns joinVoiceChannel
+ */
   connectToChanel(channel) {
     
     const connection = joinVoiceChannel({
@@ -80,7 +120,12 @@ class MusicManager {
 
     return connection
   }
-
+/**
+ * play music in greate Voice Channel
+ * @param {joinVoiceChannel} connection 
+ * @param {string} url 
+ * @param {string} id 
+ */
   async play(connection, url, id) {
     if (!this.player.get(id)) {
       console.log(`Create instance music : ${id}`)
@@ -97,23 +142,29 @@ class MusicManager {
 
     
   }
-
-  async add_wait_list(url) {
-    this.wait_list.append(url)
-  }
-
+/**
+ * stop music in great channel
+ * @param {string} id 
+ */
   async stop(id) {
     if (this.player.get(id)) {
       this.player.get(id).stop()
     }
   }
-
+/**
+ * next music un great channel
+ * @param {string} id 
+ */
   async next(id) {
     if (this.player.get(id)) {
       this.player.get(id).next()
     }
   }
-
+/**
+ * loop music in great channel (not work)
+ * @param {joinVoiceChannel} connection 
+ * @param {string} url 
+ */
   async loop(connection, url) {
 
   }
