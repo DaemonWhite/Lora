@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, collectorFillter } = require('discord.js');
 const {default: axios} = require('axios')
 
 module.exports = {
@@ -24,17 +24,13 @@ module.exports = {
 				.setName('emoji')
 				.setDescription('emoji associer au role')
 				.setRequired(true)),
-	async execute(interaction) {
-		console.log("interaction : ", interaction.options)
+	async execute(interaction, client) {
 		let emoji = interaction.options.getString('emoji');
-
-		console.log(emoji.length)
+		let role = interaction.options.getRole('rôle')
 		
-		console.log(emoji)
 		const embed = new EmbedBuilder()
 			.setColor('#004400')
 			.setDescription('Emoji enorme de la mort qui tue')
-			.setImage(emoji)
 			.setTimestamp()
 
 		const button = new ButtonBuilder()
@@ -43,6 +39,37 @@ module.exports = {
 		const row = new ActionRowBuilder()
 			.setComponents(button)
 
-		await interaction.reply({embeds: [embed]});
+		const message = await interaction.reply({content:"billy chan", embeds: [embed], fetchReply: true})
+
+		const reaction_collector = message.createReactionCollector({collectorFillter, time: 0, dispose: true});
+
+		reaction_collector.on('remove', (r, user) => {
+			const member_cache = interaction.guild.members.fetch(user.id);
+			const member = interaction.guild.members.cache.get(user.id);
+
+			member.roles.remove(role);
+			interaction.channel.send(`suppression du role ${role} à ${user}`)
+			member.roles.add(role);
+			
+		});
+		
+		reaction_collector.on('collect', (r, user) => { 
+			// console.log(`Collected ${r.emoji.name}`); 
+			const member_cache = interaction.guild.members.fetch(user.id);
+			const member = interaction.guild.members.cache.get(user.id);
+
+			if (!member.roles.cache.has(role.id)) {
+				member.roles.add(role);
+				interaction.channel.send(`Ajout du role ${role} à ${user}`);
+			} else {
+				interaction.channel.send("Vous avez déjà ce role")
+			}
+			member.roles.add(role);
+			
+		});
+		reaction_collector.on('end', collected => console.log(`Collected ${collected} items`));
+		
+		const react = await message.react(emoji)
+		await react;
 	},
 };
