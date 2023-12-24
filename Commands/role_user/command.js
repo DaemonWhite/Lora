@@ -41,9 +41,9 @@ module.exports = {
 
 		const message = await interaction.reply({content:"billy chan", embeds: [embed], fetchReply: true})
 
-		const reaction_collector = message.createReactionCollector({collectorFillter, time: 0, dispose: true});
+		const reaction_collector = message.createReactionCollector({time: 0, dispose: true});
 
-		reaction_collector.on('remove', (r, user) => {
+		reaction_collector.on('remove', (reaction, user) => {
 			const member_cache = interaction.guild.members.fetch(user.id);
 			const member = interaction.guild.members.cache.get(user.id);
 
@@ -53,8 +53,8 @@ module.exports = {
 			
 		});
 		
-		reaction_collector.on('collect', (r, user) => { 
-			// console.log(`Collected ${r.emoji.name}`); 
+		reaction_collector.on('collect', (reaction, user) => { 
+			console.log(`Collected ${reaction.emoji.name}`); 
 			const member_cache = interaction.guild.members.fetch(user.id);
 			const member = interaction.guild.members.cache.get(user.id);
 

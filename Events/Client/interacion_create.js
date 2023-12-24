@@ -1,8 +1,10 @@
 const { Events} = require('discord.js');
 
-const {MusicManager} = require('../../utils/music')
+const {MusicManager} = require('../../utils/music');
+const {ReactionManager} = require('../../utils/reaction.js');
 
-const player = new MusicManager()
+const player = new MusicManager();
+const reaction_manager = new ReactionManager();
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -25,7 +27,12 @@ module.exports = {
                 interaction.commandName == "next" 
             ) {
                 await command.execute(interaction, player);
-            }else {
+            } else if (
+                interaction.commandName == "create_subscribe_role" ||
+                interaction.commandName == "add_subscribe_role"
+            ) {
+                await command.execute(interaction, reaction_manager);
+            } else {
                 await command.execute(interaction);
             }
         } catch (error) {
