@@ -2,10 +2,10 @@ const {SlashCommandBuilder,EmbedBuilder, Events} = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
-    .setName('Ajout_du_message')
+    .setName('message')
     .setDescription("Afficher un message de présentation"),
         
-    async execute(interaction, reaction_manager) {
+    async execute(interaction) {
         let msg = new EmbedBuilder()
         .setColor(0x00e7e3)
         .setTitle("Rôle")
