@@ -13,12 +13,6 @@ module.exports = {
 				.setRequired(true)
 
 		)
-		.addChannelOption(option =>
-			option
-				.setName('chanel')
-				.setDescription('chanel à envoiyer')
-				.setRequired(true) 
-		)
 		.addStringOption(option => 
 			option
 				.setName('emoji')

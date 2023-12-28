@@ -28,7 +28,7 @@ module.exports = {
 		let emoji = interaction.options.getString('emoji');
 		let desciption = interaction.options.getString('description')
 		let role = interaction.options.getRole('role')
-
+		
 		let id = interaction.user.id;
 
 		let send = {content: "Error inconnue"};
