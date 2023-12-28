@@ -90,23 +90,15 @@ class ReactionEvent extends ReactionData {
 			const member = this.#guild.members.cache.get(user.id);
             let index =0;
             console.log(this._emoji);
-            if (reaction.emoji.name == this._emoji[0]) {
-                console.log("Ils sont égaut")    
-            }
 
             let choice_role = this.choice_role(reaction.emoji.name, member);
 
-            if (choice_role.role) {
-                member.roles.remove(choice_role.role);
+            if (choice_role) {
+                member.roles.remove(choice_role);
                 this.#channel.send(`Supression du role`) 
             } else {
                 this.#channel.send(`Une erreur inconue est survenue`)
             }
-
-			// member.roles.remove(role);
-			// this.#channel.send(`suppression du role ${role} à ${user}`)
-			// member.roles.add(role);
-			
 		});
 
         console.log(this.#message);
@@ -117,9 +109,9 @@ class ReactionEvent extends ReactionData {
 			const member = this.#guild.members.cache.get(user.id);
 
             let choice_role = this.choice_role(reaction.emoji.name, member);
-            console.log(choice_role);
+            console.log(reaction.emoji.name);
             if (choice_role) {
-                member.roles.add(choice_role.role);
+                member.roles.add(choice_role);
                 this.#channel.send(`Ajout du role`)
             } else {
                 this.#channel.send(`Une erreur inconue est survenue`)
