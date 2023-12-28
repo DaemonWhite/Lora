@@ -29,7 +29,8 @@ module.exports = {
                 await command.execute(interaction, player);
             } else if (
                 interaction.commandName == "create_subscribe_role" ||
-                interaction.commandName == "add_subscribe_role"
+                interaction.commandName == "add_subscribe_role" || 
+                interaction.commandName == "publish_user_role"
             ) {
                 await command.execute(interaction, reaction_manager);
             } else {
