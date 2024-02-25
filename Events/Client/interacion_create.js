@@ -34,10 +34,10 @@ module.exports = {
             ) {
                 await command.execute(interaction, reaction_manager);
             } else if(
-                interaction.commandName == "ajout_du_message"||
+                interaction.commandName == "message"||
                 interaction.commandName == "ajout_d_un_role" 
              ) {
-                //await command.execute(interaction, );
+                await command.execute(interaction);
             
             }else {
                 await command.execute(interaction);
