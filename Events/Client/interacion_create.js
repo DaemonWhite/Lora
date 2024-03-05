@@ -2,9 +2,11 @@ const { Events} = require('discord.js');
 
 const {MusicManager} = require('../../utils/music');
 const {ReactionManager} = require('../../utils/reaction.js');
+const {GestionReaction} = require('../../utils/gestion_reaction.js');
 
 const player = new MusicManager();
 const reaction_manager = new ReactionManager();
+const reaction = new GestionReaction();
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -34,10 +36,10 @@ module.exports = {
             ) {
                 await command.execute(interaction, reaction_manager);
             } else if(
-                interaction.commandName == "message"||
-                interaction.commandName == "ajout_d_un_role" 
+                interaction.commandName == "ajouter_message"||
+                interaction.commandName == "ajouter_role" 
              ) {
-                await command.execute(interaction);
+                await command.execute(interaction, reaction);
             
             }else {
                 await command.execute(interaction);

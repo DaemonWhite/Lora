@@ -22,25 +22,26 @@ class reaction_v2 {
     }
 }
 
-class gestion_reaction {
+class GestionReaction {
     tab_reaction = []
-    longeur = 0
+    taille = 0
     ajouter_reaction(role, description, emoji) {
         let reaction = new reaction_v2(role, description, emoji)
         this.tab_reaction.push(reaction)
-        this.longeur ++
+        this.taille ++
     }
 
     supprimer_reaction() {
         this.tab_reaction = []
-        this.longeur = 0
+        this.taille = 0
     }
 
     recuperer_reaction(index) {
         return this.tab_reaction[index]
     }
 
-    recuperer_longueur() {
-        return this.longeur
+    recuperer_taille() {
+        return this.taille
     }
 }
+module.exports = {GestionReaction}

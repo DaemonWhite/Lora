@@ -23,16 +23,19 @@ module.exports = {
         .setRequired(true)
     ),
 
-    async execute(interaction) {
+    async execute(interaction, reaction) {
         let role = interaction.options.getRole("role")
         let description = interaction.options.getString("description")
-        let emoji = interaction.options.getString("emoji")
-        const jean = `${role} ${description} ${emoji}`
+        let emoji = interaction.options.getString("emoji") 
+        reaction.ajouter_reaction(role, description, emoji)
         let msg = new EmbedBuilder()
-        .setColor(0x00e7e3)
-        .setTitle("Rôle")
-        .addFields({name:' ', value: jean},)
-        const message = await interaction.reply({embeds: [msg], fetchReply: true })
-        //reaction_manager.ajout_du_message(message)
+            .setColor(0x00e7e3)
+            .setTitle("Rôle")
+        for (let i = 0; i < reaction.recuperer_taille(); i++) {
+            let react = reaction.recuperer_reaction(i)
+            msg.addFields({name:' ', value: `${react.get_role()} ${react.get_description()} ${react.get_emoji()}`})       
+        }
+        await interaction.reply({embeds: [msg], fetchReply: true })
+        
     },
 };
