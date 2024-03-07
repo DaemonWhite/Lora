@@ -10,15 +10,15 @@ class reaction_v2 {
     }
     
     get_role() {
-        return role;
+        return this._role;
     }
 
     get_description() {
-        return description;
+        return this._description;
     }
 
     get_emoji() {
-        return emoji;
+        return this._emoji;
     }
 }
 

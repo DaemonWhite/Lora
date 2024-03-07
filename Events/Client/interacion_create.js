@@ -36,7 +36,7 @@ module.exports = {
             ) {
                 await command.execute(interaction, reaction_manager);
             } else if(
-                interaction.commandName == "ajouter_message"||
+                interaction.commandName == "message"||
                 interaction.commandName == "ajouter_role" 
              ) {
                 await command.execute(interaction, reaction);

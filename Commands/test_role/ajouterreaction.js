@@ -2,15 +2,23 @@ const {SlashCommandBuilder,EmbedBuilder, Events} = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
-    .setName('Ajout_des_roles')
-    .setDescription("Ajouter les roles")
-    .addStringOption(option =>
-    option
-        .setName("emoji")
-        .setDescription("Choisissez un émoji")
+    .setName('publier')
+    .setDescription("Publier un message")
+    .addChannelOption(option =>
+        option
+        .setName("channel")
+        .setDescription("Choisissez un channel")
         .setRequired(true)),
 
-        async execute(interaction) {
+    async execute(interaction) {
+        let msg = new EmbedBuilder()
+            .setColor(0x00e7e3)
+            .setTitle("Rôle")
+        for (let i = 0; i < reaction.recuperer_taille(); i++) {
+            let react = reaction.recuperer_reaction(i)
+            msg.addFields({name:' ', value: `${react.get_role()} ${react.get_description()} ${react.get_emoji()}`})       
+        }
+        await interaction.send()
         let emoji = interaction.options.getString('emoji')
         message.react(emoji)
         const collector = message.createReactionCollector({dispose: true})
