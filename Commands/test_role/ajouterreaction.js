@@ -10,7 +10,7 @@ module.exports = {
         .setDescription("Choisissez un channel")
         .setRequired(true)),
 
-    async execute(interaction) {
+    async execute(interaction, reaction) {
         let msg = new EmbedBuilder()
             .setColor(0x00e7e3)
             .setTitle("Rôle")
@@ -18,7 +18,10 @@ module.exports = {
             let react = reaction.recuperer_reaction(i)
             msg.addFields({name:' ', value: `${react.get_role()} ${react.get_description()} ${react.get_emoji()}`})       
         }
-        await interaction.send()
+        let channel = interaction.options.getChannel("channel")
+        await channel.send({embeds:[msg]})
+        await interaction.reply("message envoyé")
+
         let emoji = interaction.options.getString('emoji')
         message.react(emoji)
         const collector = message.createReactionCollector({dispose: true})
