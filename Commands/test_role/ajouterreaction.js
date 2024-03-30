@@ -30,18 +30,18 @@ module.exports = {
             
             collector.on('collect', (reaction, user) =>{
                 const role = message.guild.roles.cache.find(reaction => reaction.name === emoji.get_role().name)
-                interaction.guild.members.cache.get(user.id).roles.add(role)
                 if (reaction._emoji.name == emoji.get_emoji()){
                     interaction.channel.send(`Vous avez maitenant le role ${role} ${user.tag}`)
+                    interaction.guild.members.cache.get(user.id).roles.add(role)
                 }
                 console.log(reaction._emoji.name)
             });
     
             collector.on('remove', (reaction, user) => {
                 const pasderoles = message.guild.roles.cache.find(r => r.name === emoji.get_role().name)
-                interaction.guild.members.cache.get(user.id).roles.remove(pasderoles)
                 if (reaction._emoji.name == emoji.get_emoji()){
                     interaction.channel.send(`${user.tag} n'a plus le role ${pasderoles}`)
+                    interaction.guild.members.cache.get(user.id).roles.remove(pasderoles)
                 }
             });
         }

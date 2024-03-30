@@ -44,4 +44,16 @@ class GestionReaction {
         return this.taille
     }
 }
+
+class GestionGuildReaction {
+    react_map = new Map()
+    inscription(id_salon){
+        this.react_map.set(id_salon, new GestionReaction())
+    }
+
+    get_gestion_reaction(id_salon){
+        return this.react_map.get(id_salon)
+    }
+
+}
 module.exports = {GestionReaction}
