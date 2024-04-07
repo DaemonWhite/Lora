@@ -31,7 +31,7 @@ module.exports = {
         try {
             let youtube_link = "";
             if (!channel.isVoiceBased()) {
-                return await interaction.channel.send("Hmmmmmmmmm, difficile de chanter dans salon textuuel non ?")
+                return await interaction.channel.send("Hmmmmmmmmm, difficile de chanter dans un salon textuel non ?")
             }
 
             if (titre.length <= 2) {
@@ -39,14 +39,24 @@ module.exports = {
             }
 
 
-            if (titre.includes('https://youtube.com') || titre.includes('https://youtu.be')) {
+            if (titre.includes('youtube.com/watch?v=') || titre.includes('https://youtu.be')) {
                 youtube_link = titre;
             } else {
                 let result = await ytdl_seach(titre);
                 if (!result ?.all ?.length) {
                     return await interaction.channel.send("Désoler j'ai pas trouver")
                 }
-                youtube_link = result.all[0].url;
+                console.log(result.all)
+                for (let index = 0; index < result.all.length; index++) {
+                    if (result.all[index].type === "video") {
+                        youtube_link = result.all[index].url;
+                        break
+                    }              
+                }
+
+                if (youtube_link === "") {
+                    return await interaction.channel.send("Désoler j'ai pas trouver")
+                }
             }
             
             player.play(connection, youtube_link, channel.id)
