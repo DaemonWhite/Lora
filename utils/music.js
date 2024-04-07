@@ -131,16 +131,14 @@ class MusicManager {
       console.log(`Create instance music : ${id}`)
       this.player.set(id, new MusicData());
     }
-
-    const stream = ytdl(url, { filter: 'audioonly' });
+    const stream = await ytdl(url, { filter: 'audioonly' });
+    
     const resource = createAudioResource(stream, {
       inputType: StreamType.Arbitrary,
     });
 
     this.player.get(id).add_fill(resource);
     this.player.get(id).play(connection);
-
-    
   }
 /**
  * stop music in great channel

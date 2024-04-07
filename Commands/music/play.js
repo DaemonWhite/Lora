@@ -1,5 +1,24 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const ytdl_seach = require('yt-search');
+const ytdl = require('ytdl-core');
+
+function embledGenerator(info, error) {
+    let color = 0x0098ba;
+    let title = info.title
+    if (error == true) {
+        color = 0xff0000;
+        title = "Impossible de lire/ajouter la musique veuliez vérifier quel est bien disponible dans votre régions\n${info.url}" + info.title
+    }
+    return new EmbedBuilder()
+        .setColor(color)
+        .setTitle(title)
+        .setURL(info.url)
+        .setAuthor(info.author)
+        .setDescription(info.description)
+        .setImage(info.thumbnail)
+        .setTimestamp()
+    
+}
 
 
 module.exports = {
@@ -19,9 +38,8 @@ module.exports = {
                 .setRequired(true)
         ),
     async execute(interaction, player) {
-        titre = interaction.options.getString("titre");
-        channel = interaction.options.getChannel("channel");
-
+        let titre = interaction.options.getString("titre");
+        let channel = interaction.options.getChannel("channel");
         const connection = player.connectToChanel(channel)
 
         //await interaction.deferReply();
@@ -29,7 +47,7 @@ module.exports = {
         await interaction.reply('Recherche en cour...')
         
         try {
-            let youtube_link = "";
+            let info = ""
             if (!channel.isVoiceBased()) {
                 return await interaction.channel.send("Hmmmmmmmmm, difficile de chanter dans un salon textuel non ?")
             }
@@ -40,7 +58,9 @@ module.exports = {
 
 
             if (titre.includes('youtube.com/watch?v=') || titre.includes('https://youtu.be')) {
-                youtube_link = titre;
+                let regex = /[=]/g;
+                let index = titre.search(regex) + 1;
+                info = await ytdl_seach({ videoId: titre.slice(index) }) 
             } else {
                 let result = await ytdl_seach(titre);
                 if (!result ?.all ?.length) {
@@ -49,19 +69,25 @@ module.exports = {
                 console.log(result.all)
                 for (let index = 0; index < result.all.length; index++) {
                     if (result.all[index].type === "video") {
-                        youtube_link = result.all[index].url;
+                        info = result.all[index];
                         break
                     }              
                 }
 
-                if (youtube_link === "") {
+                if (info.url === "") {
                     return await interaction.channel.send("Désoler j'ai pas trouver")
                 }
             }
             
-            player.play(connection, youtube_link, channel.id)
-            
-            return await interaction.channel.send({ content: `Bonne Music: ${youtube_link}`})    
+            try {
+                await ytdl.getBasicInfo(info.url)
+                player.play(connection, info.url, channel.id)
+                const emb = embledGenerator(info, false);
+                return await interaction.channel.send({ embeds: [emb]})    
+            } catch (error) {
+                const emb = embledGenerator(info, true);
+                return await interaction.channel.send({ embeds: [emb]})  
+            }
 
         } catch (e) {
             console.log("erreur /play : ", e)
