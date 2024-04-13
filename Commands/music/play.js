@@ -66,7 +66,6 @@ module.exports = {
                 if (!result ?.all ?.length) {
                     return await interaction.channel.send("Désoler j'ai pas trouver")
                 }
-                console.log(result.all)
                 for (let index = 0; index < result.all.length; index++) {
                     if (result.all[index].type === "video") {
                         info = result.all[index];
@@ -81,7 +80,7 @@ module.exports = {
             
             try {
                 await ytdl.getBasicInfo(info.url)
-                player.play(connection, info.url, channel.id)
+                player.play(connection, info, channel.id)
                 const emb = embledGenerator(info, false);
                 return await interaction.channel.send({ embeds: [emb]})    
             } catch (error) {
