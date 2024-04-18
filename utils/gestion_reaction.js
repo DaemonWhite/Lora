@@ -56,4 +56,4 @@ class GestionGuildReaction {
     }
 
 }
-module.exports = {GestionReaction}
+module.exports = {GestionReaction, GestionGuildReaction}
