@@ -2,11 +2,12 @@ const { Events} = require('discord.js');
 
 const {MusicManager} = require('../../utils/music');
 const {ReactionManager} = require('../../utils/reaction.js');
-const {GestionReaction} = require('../../utils/gestion_reaction.js');
+const {GestionReaction, GestionGuildReaction} = require('../../utils/gestion_reaction.js');
 
 const player = new MusicManager();
 const reaction_manager = new ReactionManager();
-const reaction = new GestionReaction();
+//const reaction = new GestionReaction();
+const gestionguildreaction = new GestionGuildReaction();
 
 module.exports = {
     name: Events.InteractionCreate,
@@ -38,8 +39,8 @@ module.exports = {
             } else if(
                 interaction.commandName == "message"||
                 interaction.commandName == "publier" 
-             ) {
-                await command.execute(interaction, reaction);
+            ) {
+                await command.execute(interaction, gestionguildreaction);
             
             }else {
                 await command.execute(interaction);
