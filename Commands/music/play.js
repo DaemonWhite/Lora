@@ -1,25 +1,8 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder} = require('discord.js');
 const ytdl_seach = require('yt-search');
 const ytdl = require('ytdl-core');
 
-function embledGenerator(info, error) {
-    let color = 0x0098ba;
-    let title = info.title
-    if (error == true) {
-        color = 0xff0000;
-        title = "Impossible de lire/ajouter la musique veuliez vérifier quel est bien disponible dans votre régions\n${info.url}" + info.title
-    }
-    return new EmbedBuilder()
-        .setColor(color)
-        .setTitle(title)
-        .setURL(info.url)
-        .setAuthor(info.author)
-        .setDescription(info.description)
-        .setImage(info.thumbnail)
-        .setTimestamp()
-    
-}
-
+const {embledPlayerBuilder} = require('../../utils/music.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -81,10 +64,10 @@ module.exports = {
             try {
                 await ytdl.getBasicInfo(info.url)
                 player.play(connection, info, channel.id)
-                const emb = embledGenerator(info, false);
+                const emb = embledPlayerBuilder(info, false);
                 return await interaction.channel.send({ embeds: [emb]})    
             } catch (error) {
-                const emb = embledGenerator(info, true);
+                const emb = embledPlayerBuilder(info, true);
                 return await interaction.channel.send({ embeds: [emb]})  
             }
 

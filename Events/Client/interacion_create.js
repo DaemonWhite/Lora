@@ -26,7 +26,8 @@ module.exports = {
             if (
                 interaction.commandName == "play" || 
                 interaction.commandName == "stop" ||
-                interaction.commandName == "next" 
+                interaction.commandName == "next" ||
+                interaction.commandName == "get_playlist"
             ) {
                 await command.execute(interaction, player);
             } else if (
