@@ -1,6 +1,6 @@
 const { SlashCommandBuilder} = require('discord.js');
 const ytdl_seach = require('yt-search');
-const ytdl = require('ytdl-core');
+const ytdl = require('@distube/ytdl-core');
 
 const {embledPlayerBuilder} = require('../../utils/music.js');
 
@@ -23,57 +23,58 @@ module.exports = {
     async execute(interaction, player) {
         let titre = interaction.options.getString("titre");
         let channel = interaction.options.getChannel("channel");
-        const connection = player.connectToChanel(channel)
+        const connection = player.connectToChanel(channel);
 
         //await interaction.deferReply();
 
-        await interaction.reply('Recherche en cour...')
+        await interaction.reply('Recherche en cour...');
         
         try {
             let info = ""
             if (!channel.isVoiceBased()) {
-                return await interaction.channel.send("Hmmmmmmmmm, difficile de chanter dans un salon textuel non ?")
+                return await interaction.channel.send("Hmmmmmmmmm, difficile de chanter dans un salon textuel non ?");
             }
 
             if (titre.length <= 2) {
-                return await interaction.channel.send("Désoler mais il faudra me donner un peut plus de charactère")
+                return await interaction.channel.send("Désoler mais il faudra me donner un peut plus de charactère");
             }
 
 
             if (titre.includes('youtube.com/watch?v=') || titre.includes('https://youtu.be')) {
                 let regex = /[=]/g;
                 let index = titre.search(regex) + 1;
-                info = await ytdl_seach({ videoId: titre.slice(index) }) 
+                info = await ytdl_seach({ videoId: titre.slice(index) }) ;
             } else {
                 let result = await ytdl_seach(titre);
                 if (!result ?.all ?.length) {
-                    return await interaction.channel.send("Désoler j'ai pas trouver")
+                    return await interaction.channel.send("Désoler j'ai pas trouver");
                 }
                 for (let index = 0; index < result.all.length; index++) {
                     if (result.all[index].type === "video") {
                         info = result.all[index];
-                        break
+                        break;
                     }              
                 }
 
                 if (info.url === "") {
-                    return await interaction.channel.send("Désoler j'ai pas trouver")
+                    return await interaction.channel.send("Désoler j'ai pas trouver");
                 }
             }
             
             try {
-                await ytdl.getBasicInfo(info.url)
-                player.play(connection, info, channel.id)
+                await ytdl.getBasicInfo(info.url);
+                player.play(connection, info, channel.id);
                 const emb = embledPlayerBuilder(info, false);
-                return await interaction.channel.send({ embeds: [emb]})    
+                return await interaction.channel.send({ embeds: [emb]});  
             } catch (error) {
                 const emb = embledPlayerBuilder(info, true);
-                return await interaction.channel.send({ embeds: [emb]})  
+                console.log("error: ", error);
+                return await interaction.channel.send({ embeds: [emb]});
             }
 
         } catch (e) {
-            console.log("erreur /play : ", e)
-            return await interaction.channel.send("Désoler mon ami mais qu'elle que chose c'est mal passer")
+            console.log("erreur /play : ", e);
+            return await interaction.channel.send("Désoler mon ami mais qu'elle que chose c'est mal passer");
         }
 
     }
