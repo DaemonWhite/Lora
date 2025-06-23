@@ -1,5 +1,5 @@
 const tmp = require('tmp');
-const { createReadStream, unlink } = require('node:fs');
+const { createReadStream, createWriteStream, unlink } = require('node:fs');
 
 const { 
   AudioPlayerStatus,
@@ -10,32 +10,32 @@ const {
   VoiceConnectionStatus 
 } = require("@discordjs/voice");
 
-const youtubedl = require('youtube-dl-exec');
+const ytdl = require('@distube/ytdl-core');
 const { EmbedBuilder } = require('discord.js');
 //--extract-audio
 
 
 class MusicData {
-  #ready = false
-  #path = ""
-  #info = ""
-  #ready_event
+  #ready = false;
+  #path = "";
+  #info = "";
+  #ready_event;
 
   constructor (info, ready_event) {
     this.#info = info;
-    this.#ready_event = ready_event
+    this.#ready_event = ready_event;
   }
 
   get ready() {
-    return this.#ready
+    return this.#ready;
   }
 
   get path() {
-    return this.#path
+    return this.#path;
   }
 
   get info() {
-    return this.#info
+    return this.#info;
   }
 
   delete() {
@@ -55,19 +55,20 @@ class MusicData {
     console.log('Fichier Temporarie : ', tpm_video.name);
     console.log('Descripteur de fichier', tpm_video.fd);
 
-    await youtubedl((this.#info.url), {
-      noCheckCertificates: true,
-      noWarnings: true,
-      audioQuality: 0,
-      
-      preferFreeFormats: true,
-      remuxVideo: "mp4/mkv",
-      output: tpm_video.name,
-      addHeader: ['referer:youtube.com', 'user-agent:googlebot']
+    await new Promise((resolve, reject) => {
+      ytdl(this.#info.url, {
+        quality: 'highestaudio',
+        filter: 'audioonly',
+        audioCodec: 'opus',
+        container: 'webm',
+      })
+        .pipe(createWriteStream(tpm_video.name))
+        .on('finish', resolve)
+        .on('error', reject);
     });
 
-    this.#path = tpm_video.name + ".mp4";
-    tpm_video.removeCallback();
+
+    this.#path = tpm_video.name;
     this.#ready = true;
     this.#ready_event();
   }
@@ -77,9 +78,9 @@ class MusicData {
 * Music data
 */
 class PlayerMusic {
-  #connection
-  #fill = []
-  #is_play = false
+  #connection;
+  #fill = [];
+  #is_play = false;
   #player = createAudioPlayer({
     behaviors: {
 		  noSubscriber: NoSubscriberBehavior.Pause,
@@ -91,31 +92,31 @@ class PlayerMusic {
   }
 
   get_fills() {
-    return this.#fill
+    return this.#fill;
   }
   /**
    * Return first music
    * @returns fill[0]
    */
   get_fill(){
-    return this.#fill
+    return this.#fill;
   }
   /**
    * 
    * @returns is_play
    */
   get_play() {
-    return this.#is_play
+    return this.#is_play;
   }
   /**
    * add resource music in fill
    * @param {AudioResource} resource 
    */
   async add_fill(resource) {
-    console.log(resource)
+    console.log(resource);
     this.#fill.push(new MusicData(resource, () => {this.play()}));
     this.#fill[this.len_fill() - 1].download();
-    console.log(this.#fill)
+    console.log(this.#fill);
   }
 
   /**
@@ -123,7 +124,7 @@ class PlayerMusic {
    * @returns fill.length
    */
   len_fill() {
-    return this.#fill.length
+    return this.#fill.length;
   }
 
   /**
@@ -143,7 +144,7 @@ class PlayerMusic {
    */
   async next() {
     this.#is_play = false;
-    console.log("Delete", this.#fill)
+    console.log("Delete", this.#fill);
     try {
       await this.#fill[0].delete();
       this.#fill.shift();
@@ -155,7 +156,7 @@ class PlayerMusic {
       this.play();
       next = true;
     }
-    return next
+    return next;
   }
 
   /**
@@ -172,7 +173,7 @@ class PlayerMusic {
   play() {
     if (this.len_fill() > 0 && !this.#is_play) {
       if (!this.#fill[0].ready) {
-        return false
+        return false;
       }
       console.log(this.#fill) 
       this.#resource = createAudioResource(
@@ -193,11 +194,11 @@ class PlayerMusic {
       this.#player.on('error', error => {
         console.error(error);
       });
-      console.log(this.#fill)
+      console.log(this.#fill);
       this.#player.on(
         AudioPlayerStatus.Idle, () => {
-          console.log(this.#fill)
-          console.log("IDLE")
+          console.log(this.#fill);
+          console.log("IDLE");
           if (this.next() && this.#is_play) {
             console.log("Music Suivante");
           } else {
@@ -218,11 +219,11 @@ class MusicManager {
     this.player = new Map();
   }
   get_playlist(id) {
-    let playlist = null
+    let playlist = null;
     if (this.player.get(id)) {
       playlist = this.player.get(id).get_fills();
     }
-    return playlist
+    return playlist;
   }
 /**
  * Connect base event to voice channel
@@ -242,7 +243,7 @@ class MusicManager {
       console.log(`old state : ${oldState}\n\n newState : ${newState}`);
     });
 
-    return connection
+    return connection;
   }
 /**
  * play music in greate Voice Channel
@@ -258,7 +259,7 @@ class MusicManager {
 
     this.player.get(id).add_fill(info);
     if (!this.player.get(id).get_play()) {
-      this.player.get(id).connection(connection)
+      this.player.get(id).connection(connection);
     }
   }
 /**
@@ -276,7 +277,7 @@ class MusicManager {
  */
   async next(id) {
     if (this.player.get(id)) {
-      this.player.get(id).next()
+      this.player.get(id).next();
     }
   }
 
@@ -295,7 +296,7 @@ function embledPlayerBuilder(info, error) {
   let title = info.title;
   if (error == true) {
       color = 0xff0000;
-      title = "Impossible de lire/ajouter la musique veuliez vérifier quel est bien disponible dans votre régions\n${info.url}" + info.title
+      title = "Impossible de lire/ajouter la musique veuliez vérifier quel est bien disponible dans votre régions\n${info.url}" + info.title;
   }
   return new EmbedBuilder()
       .setColor(color)
@@ -304,7 +305,7 @@ function embledPlayerBuilder(info, error) {
       .setAuthor(info.author)
       .setDescription(info.description)
       .setImage(info.thumbnail)
-      .setTimestamp()
+      .setTimestamp();
   
 }
 
@@ -312,20 +313,20 @@ function embledPLaylistBuilder(playlist) {
   function name_n(i) {
     let data = "";
     if (i ==0) {
-      data = ">"
+      data = ">";
     } else { 
-      data = " "
+      data = " ";
     }
-    return (data += ` ${i} - `)
+    return (data += ` ${i} - `);
   }
   let emb = new EmbedBuilder();
   console.log(playlist);
   if (playlist?. length > 0 ) {
-    emb.setTitle("Playlist")
-    emb.setThumbnail(playlist[0].info.thumbnail)
-    emb.setURL(playlist[0].info.url)
+    emb.setTitle("Playlist");
+    emb.setThumbnail(playlist[0].info.thumbnail);
+    emb.setURL(playlist[0].info.url);
     for (let i = 0; i < playlist.length; i++) {
-      console.log(playlist[i])
+      console.log(playlist[i]);
       emb.addFields( 
           {
             name: " ",
@@ -335,13 +336,13 @@ function embledPLaylistBuilder(playlist) {
     }
 
   } else {
-    emb.setTitle("Pas de lecture en cours...\n et rien qui suit")
+    emb.setTitle("Pas de lecture en cours...\n et rien qui suit");
   }
-  return emb
+  return emb;
 }
 
 module.exports = {
   MusicManager,
   embledPlayerBuilder,
   embledPLaylistBuilder
-}
+};
