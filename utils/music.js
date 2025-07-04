@@ -1,5 +1,5 @@
 const tmp = require('tmp');
-const { createReadStream, createWriteStream, unlink } = require('node:fs');
+const { createReadStream, createWriteStream, unlink, readFileSync, existsSync } = require('node:fs');
 
 const { 
   AudioPlayerStatus,
@@ -20,10 +20,15 @@ class MusicData {
   #path = "";
   #info = "";
   #ready_event;
+  #cookie = null
 
   constructor (info, ready_event) {
     this.#info = info;
     this.#ready_event = ready_event;
+    
+    if (existsSync("cookie.json")) {
+      this.#cookie = readFileSync("cookie.json");
+    } 
   }
 
   get ready() {
@@ -56,15 +61,28 @@ class MusicData {
     console.log('Descripteur de fichier', tpm_video.fd);
 
     await new Promise((resolve, reject) => {
-      ytdl(this.#info.url, {
+
+      let options = {
         quality: 'highestaudio',
         filter: 'audioonly',
         audioCodec: 'opus',
         container: 'webm',
-      })
-        .pipe(createWriteStream(tpm_video.name))
-        .on('finish', resolve)
-        .on('error', reject);
+      };
+
+      if (this.#cookie) {
+        let agent = ytdl.createAgent(JSON.parse(this.#cookie));
+        console.log("Cookie")
+        ytdl(this.#info.url, options)
+          .pipe(createWriteStream(tpm_video.name), {agent})
+          .on('finish', resolve)
+          .on('error', reject);
+      } else {
+        ytdl(this.#info.url, options)
+          .pipe(createWriteStream(tpm_video.name))
+          .on('finish', resolve)
+          .on('error', reject);
+      }
+      
     });
 
 
