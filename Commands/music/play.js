@@ -64,7 +64,6 @@ module.exports = {
             
             try {
                 if (player.cookie.isLoad()) {
-                    console.log("teste")
                     await ytdl.getBasicInfo(info.url, { agent: player.cookie.getAgent() });
                 } else {
                     await ytdl.getBasicInfo(info.url);

@@ -73,6 +73,7 @@ class MusicData {
           .on('finish', resolve)
           .on('error', reject);
       } else {
+        console.log("not cookie")
         ytdl(this.#info.url, options)
           .pipe(createWriteStream(tpm_video.name))
           .on('finish', resolve)
@@ -317,7 +318,7 @@ function embledPlayerBuilder(info, error) {
   let title = info.title;
   if (error == true) {
       color = 0xff0000;
-      title = "Impossible de lire/ajouter la musique veuliez vérifier quel est bien disponible dans votre régions\n${info.url}" + info.title;
+      title = `Impossible de lire/ajouter la musique veuliez vérifier quel est bien disponible dans votre régions\n${info.url}` + info.title;
   }
   return new EmbedBuilder()
       .setColor(color)
