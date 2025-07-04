@@ -1,6 +1,7 @@
 const { SlashCommandBuilder} = require('discord.js');
 const ytdl_seach = require('yt-search');
 const ytdl = require('@distube/ytdl-core');
+const { readFileSync, existsSync } = require('node:fs');
 
 const {embledPlayerBuilder} = require('../../utils/music.js');
 
@@ -62,7 +63,13 @@ module.exports = {
             }
             
             try {
-                await ytdl.getBasicInfo(info.url);
+                if (player.cookie.isLoad()) {
+                    console.log("teste")
+                    await ytdl.getBasicInfo(info.url, { agent: player.cookie.getAgent() });
+                } else {
+                    await ytdl.getBasicInfo(info.url);
+                }
+                
                 player.play(connection, info, channel.id);
                 const emb = embledPlayerBuilder(info, false);
                 return await interaction.channel.send({ embeds: [emb]});  

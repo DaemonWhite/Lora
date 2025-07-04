@@ -22,13 +22,10 @@ class MusicData {
   #ready_event;
   #cookie = null
 
-  constructor (info, ready_event) {
+  constructor (info, cookie, ready_event) {
     this.#info = info;
     this.#ready_event = ready_event;
-    
-    if (existsSync("cookie.json")) {
-      this.#cookie = readFileSync("cookie.json");
-    } 
+    this.#cookie = cookie;
   }
 
   get ready() {
@@ -69,11 +66,10 @@ class MusicData {
         container: 'webm',
       };
 
-      if (this.#cookie) {
-        let agent = ytdl.createAgent(JSON.parse(this.#cookie));
+      if (this.#cookie.isLoad()) {
         console.log("Cookie")
         ytdl(this.#info.url, options)
-          .pipe(createWriteStream(tpm_video.name), {agent})
+          .pipe(createWriteStream(tpm_video.name), {agent: this.#cookie.getAgent()})
           .on('finish', resolve)
           .on('error', reject);
       } else {
@@ -99,14 +95,15 @@ class PlayerMusic {
   #connection;
   #fill = [];
   #is_play = false;
+  #cookie = null
   #player = createAudioPlayer({
     behaviors: {
 		  noSubscriber: NoSubscriberBehavior.Pause,
 	  },
   });
   #resource
-  constructor(connection) {
-    this.#connection = connection;
+  constructor(cookie) {
+    this.#cookie = cookie;
   }
 
   get_fills() {
@@ -131,8 +128,13 @@ class PlayerMusic {
    * @param {AudioResource} resource 
    */
   async add_fill(resource) {
-    console.log(resource);
-    this.#fill.push(new MusicData(resource, () => {this.play()}));
+    console.log("->", resource, this.#cookie);
+    this.#fill.push(
+      new MusicData(
+        resource,
+        this.#cookie, 
+        () => {this.play()}
+    ));
     this.#fill[this.len_fill() - 1].download();
     console.log(this.#fill);
   }
@@ -233,8 +235,9 @@ class PlayerMusic {
  * Connect multi stream music
  */
 class MusicManager {
-  constructor() {
+  constructor(cookie) {
     this.player = new Map();
+    this.cookie = cookie;
   }
   get_playlist(id) {
     let playlist = null;
@@ -272,7 +275,7 @@ class MusicManager {
   async play(connection, info, id) {
     if (!this.player.get(id)) {
       console.log(`Create instance music : ${id}`);
-      this.player.set(id, new PlayerMusic());
+      this.player.set(id, new PlayerMusic(this.cookie));
     }
 
     this.player.get(id).add_fill(info);

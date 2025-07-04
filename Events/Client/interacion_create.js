@@ -1,12 +1,13 @@
 const { Events} = require('discord.js');
 
-const {MusicManager} = require('../../utils/music');
+const { Cookie } = require('../../utils/cookie.js');
+const {MusicManager} = require('../../utils/music.js');
 const {ReactionManager} = require('../../utils/reaction.js');
-const {GestionReaction, GestionGuildReaction} = require('../../utils/gestion_reaction.js');
+const {GestionGuildReaction} = require('../../utils/gestion_reaction.js');
 
-const player = new MusicManager();
+const cookie = new Cookie();
+const player = new MusicManager(cookie);
 const reaction_manager = new ReactionManager();
-//const reaction = new GestionReaction();
 const gestionguildreaction = new GestionGuildReaction();
 
 module.exports = {
